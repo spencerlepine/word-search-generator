@@ -2,17 +2,40 @@ import random
 # Started on 3/26/2020 6:36 PM, finished on 3/26/2020 8:47 PM.
 
 # THE CODE IS CURRENTLY FUNCTIONAL AND MESSY, NOT OPTIMIZED YET!
-# CHANGE TO ALL CAPS
-#Add user input!
-#input() for each word, then figure out how to escape: If input is generate, do it, if the input it a word, append it the the words array
 
 # CHANGE THESE ---------------
-SIZE = 15 
-words = ['Ackee','Apple','Apricot','Avocado','Banana','Bilberry','Blackberry','Blackcurrant','Black sapote','Blueberry','Boysenberry','Breadfruit','Buddha','Cactus pear','Crab apple','Currant','Cherry','Cherimoya','Chico fruit','Cloudberry','Coconut','Cranberry','Damson','Date','Dragonfruit']
+ 
+words = ['Ackee','Apple','Apricot','Avocado','Banana','Bilberry','Blackberry','Blackcurrant','Blacksapote','Blueberry','Boysenberry','Breadfruit','Buddha','Cactus-pear','Crab-apple','Currant','Cherry','Cherimoya','Chico-fruit','Cloudberry','Coconut','Cranberry','Damson','Date','Dragonfruit']
+words = ['Venice','Rome','Paris','Porto','Milan','Barcelona','London','Vienna','Verona','Prague','Moscow','Madrid']
+words = ['PSG','Inter','ACMilan','Juventus','RealMadrid','Barcelona','Liverpool','Napoli','Roma','Ajax','Chelsea','ManCity','Atletico']
 #-----------------------------
+random.shuffle(words)
+
+alphebet1 = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+alphebet = []
+
+for elem in words:
+	for i in range(len(alphebet1)):
+		if alphebet1[i] in elem and not alphebet1[i] in alphebet:
+			alphebet.append(alphebet1[i])
+
+if 'D' not in alphebet:
+	alphebet.append('D')
+if 'G' not in alphebet:
+	alphebet.append('G')
+if 'F' not in alphebet:
+	alphebet.append('F')
+if 'L' not in alphebet:
+	alphebet.append('L')
+if 'O' not in alphebet:
+	alphebet.append('O')
+if 'T' not in alphebet:
+	alphebet.append('T')
 
 wsArray = []
+SIZE = 0
 COLS, ROWS = SIZE, SIZE
+wordArray = []
 
 for rows in range(ROWS):
 	thisRow = []
@@ -23,7 +46,9 @@ for rows in range(ROWS):
 	wsArray.append(thisRow)
 
 
-alphebet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+#alphebet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+
+wordKey = "Word Key"
 
 def print_array(array):
 	for i in range(ROWS):
@@ -90,42 +115,23 @@ def getNewCoords(coordinates, direction):
 
 
 def inputWord(wordGiven):
-	global wsArray
+	global wsArray, wordKey
 	startRow = 0
 	startCol = 0
 	wordLength = len(wordGiven) # Not -1?
 	directions = [[-1, -1],[0, -1],[1, -1],[-1, 0],[1, 0],[-1, 1],[0, 1],[1, 1]] # [c,r] - NW,N,NE W E SW,S,SE
+	#random.shuffle(directions)
 
 	# Change this back, if it is possble, set it to thisDirection and break----------------------
-	for d in range(len(directions)-1):
-		if directions[d] == [-1, -1]:
-			if not positionInArray([startCol-wordLength, startRow-wordLength]):
-				directions[d] = 0
-		elif directions[d] == [0, -1]:
-			if not positionInArray([startCol, startRow-wordLength]):
-				directions[d] = 0
-		elif directions[d] == [1, -1]:
-			if not positionInArray([startCol+wordLength, startRow-wordLength]):
-				directions[d] = 0
-		elif directions[d] == [-1, 0]:
-			if not positionInArray([startCol-wordLength, startRow]):
-				directions[d] = 0
-		elif directions[d] == [1, 0]:
-			if not positionInArray([startCol+wordLength, startRow]):
-				directions[d] = 0
-		elif directions[d] == [-1, 1]:
-			if not positionInArray([startCol-wordLength, startRow+wordLength]):
-				directions[d] = 0
-		elif directions[d] == [0, 1]:
-			if not positionInArray([startCol, startRow+wordLength]):
-				directions[d] = 0
-		elif directions[d] == [1, 1]:
-			if not positionInArray([startCol+wordLength, startRow+wordLength]):
-				directions[d] = 0
+	for e in range(len(directions)-1):
+		rChange = directions[e][1]
+		cChange = directions[e][0]
+		if not positionInArray([startCol+ (wordLength*cChange), startRow+ (wordLength*cChange)]):
+			directions[e] = 0
 
 	newList = list(filter(lambda x: (x != 0), directions))
 	random.shuffle(newList)
-	thisDirection = newList[0]
+	#thisDirection = newList[0]
 
 	#-----------------------------------------------------------------------------------------
 
@@ -137,95 +143,125 @@ def inputWord(wordGiven):
 	for let in range(wordLength):
 		letterArray.append(wordGiven[let])
 
-	for attempts in range(100):
+	for attempts in range(20):
+		thisDirection = random.choice(newList)
+		# Loop through possible directions
 		if not thisIsOkay:
 			toAdd = []
 
-		startRow = random.randint(0, ROWS-1)
-		startCol = random.randint(0, COLS-1)
+		startRow = random.randrange(ROWS)
+		startCol = random.randrange(COLS)
 		
-		for i in range(wordLength):
-			letterList = []
-			for n in range(len(toAdd)):
-				letterList.append(toAdd[n][1])
-
+		if wordLength <= ROWS or wordLength <= COLS:
 			if thisIsOkay and len(toAdd) == len(wordGiven) and letterList == letterArray:
-				printWord = []
-				for a in range(len(toAdd)):
-					lilC = toAdd[a][0][0]
-					lilR = toAdd[a][0][1]
-					lilLetterToPlace = toAdd[a][1]
-					wsArray[lilR][lilC] = lilLetterToPlace
-					printWord.append(lilLetterToPlace)
-				break
-				break
+					printWord = []
+					for a in range(len(toAdd)):
+						lilC = toAdd[a][0][0]
+						lilR = toAdd[a][0][1]
+						lilLetterToPlace = toAdd[a][1]
+						wsArray[lilR][lilC] = lilLetterToPlace
+						printWord.append(lilLetterToPlace)
+					
+					wordKey = wordKey + ", " + wordGiven
+					wordArray.append(str(wordGiven))
+					break
+					break
+				
 
-			if wordLength <= ROWS or  wordLength <= COLS:
-				if positionInArray([startCol, startRow]) and testForNoVal([startCol, startRow], wordGiven[i]):
-					if thisDirection == [-1, -1]:
-						thisC = [startCol-i, startRow-i]
-						if positionInArray([startCol-wordLength, startRow-wordLength]) and testForNoVal(thisC, wordGiven[i]):
-							toAdd.append([thisC, wordGiven[i]])
-							if i+1 == wordLength:
-								thisIsOkay = True
-					elif thisDirection == [0, -1]:
-						thisC = [startCol, startRow-i]
-						if positionInArray([startCol, startRow-wordLength]) and testForNoVal(thisC, wordGiven[i]):
-							toAdd.append([thisC, wordGiven[i]])
-							if i+1 == wordLength:
-								thisIsOkay = True
-					elif thisDirection == [1, -1]:
-						thisC = [startCol+i, startRow-i]
-						if positionInArray([startCol+wordLength, startRow-wordLength]) and testForNoVal(thisC, wordGiven[i]):
-							toAdd.append([thisC, wordGiven[i]])
-							if i+1 == wordLength:
-								thisIsOkay = True
-					elif thisDirection == [-1, 0]:
-						thisC = [startCol-i, startRow]
-						if positionInArray([startCol-wordLength, startRow]) and testForNoVal(thisC, wordGiven[i]):
-							toAdd.append([thisC, wordGiven[i]])
-							if i+1 == wordLength:
-								thisIsOkay = True
-					elif thisDirection == [1, 0]:
-						thisC = [startCol+i, startRow]
-						if positionInArray([startCol+wordLength, startRow]) and testForNoVal(thisC, wordGiven[i]):
-							toAdd.append([thisC, wordGiven[i]])
-							if i+1 == wordLength:
-								thisIsOkay = True
-					elif thisDirection == [-1, 1]:
-						thisC = [startCol-i, startRow+wordLength]
-						if positionInArray([startCol-wordLength, startRow+wordLength]) and testForNoVal(thisC, wordGiven[i]):
-							toAdd.append([thisC, wordGiven[i]])
-							if i+1 == wordLength:
-								thisIsOkay = True
-					elif thisDirection == [0, 1]:
-						thisC = [startCol, startRow+i]
-						if positionInArray([startCol, startRow+wordLength]) and testForNoVal(thisC, wordGiven[i]):
-							toAdd.append([thisC, wordGiven[i]])
-							if i+1 == wordLength:
-								thisIsOkay = True
-					elif thisDirection == [1, 1]:
-						thisC = [startCol+i, startRow+i]
-						if positionInArray([startCol+wordLength, startRow+wordLength]) and testForNoVal(thisC, wordGiven[i]):
-							toAdd.append([thisC, wordGiven[i]])
-							if i+1 == wordLength:
-								thisIsOkay = True
-			else:
-				break
+			for i in range(wordLength):
+				letterList = []
+				for n in range(len(toAdd)):
+					letterList.append(toAdd[n][1])
 
-		if attempts == 99:
-			pass#print("Could not include " + str(letterList))
+				if len(letterList) > len(wordGiven):
+					letterList = []
+					toAdd = []
+					break
+
+				elif len(letterList) <= len(wordGiven):
+				
+					if positionInArray([startCol, startRow]) and testForNoVal([startCol, startRow], wordGiven[i]):
+						if thisDirection == [-1, -1]:
+							thisC = [startCol-i, startRow-i]
+							if positionInArray([startCol-wordLength, startRow-wordLength]) and testForNoVal(thisC, wordGiven[i]):
+								toAdd.append([thisC, wordGiven[i]])
+								if i+1 == wordLength:
+									thisIsOkay = True
+						elif thisDirection == [0, -1]:
+							thisC = [startCol, startRow-i]
+							if positionInArray([startCol, startRow-wordLength]) and testForNoVal(thisC, wordGiven[i]):
+								toAdd.append([thisC, wordGiven[i]])
+								if i+1 == wordLength:
+									thisIsOkay = True
+						elif thisDirection == [1, -1]:
+							thisC = [startCol+i, startRow-i]
+							if positionInArray([startCol+wordLength, startRow-wordLength]) and testForNoVal(thisC, wordGiven[i]):
+								toAdd.append([thisC, wordGiven[i]])
+								if i+1 == wordLength:
+									thisIsOkay = True
+						elif thisDirection == [-1, 0]:
+							thisC = [startCol-i, startRow]
+							if positionInArray([startCol-wordLength, startRow]) and testForNoVal(thisC, wordGiven[i]):
+								toAdd.append([thisC, wordGiven[i]])
+								if i+1 == wordLength:
+									thisIsOkay = True
+						elif thisDirection == [1, 0]:
+							thisC = [startCol+i, startRow]
+							if positionInArray([startCol+wordLength, startRow]) and testForNoVal(thisC, wordGiven[i]):
+								toAdd.append([thisC, wordGiven[i]])
+								if i+1 == wordLength:
+									thisIsOkay = True
+						elif thisDirection == [-1, 1]:
+							thisC = [startCol-i, startRow+wordLength]
+							if positionInArray([startCol-wordLength, startRow+wordLength]) and testForNoVal(thisC, wordGiven[i]):
+								toAdd.append([thisC, wordGiven[i]])
+								if i+1 == wordLength:
+									thisIsOkay = True
+						elif thisDirection == [0, 1]:
+							thisC = [startCol, startRow+i]
+							if positionInArray([startCol, startRow+wordLength]) and testForNoVal(thisC, wordGiven[i]):
+								toAdd.append([thisC, wordGiven[i]])
+								if i+1 == wordLength:
+									thisIsOkay = True
+						elif thisDirection == [1, 1]:
+							thisC = [startCol+i, startRow+i]
+							if positionInArray([startCol+wordLength, startRow+wordLength]) and testForNoVal(thisC, wordGiven[i]):
+								toAdd.append([thisC, wordGiven[i]])
+								if i+1 == wordLength:
+									thisIsOkay = True
+					# else:
+					# 	continue
+				# else:
+				# 	continue
+
+			if attempts == 499:
+				pass#print("Could not include " + str(letterList))
 
 	#print("Successfully inputed: " + str(printWord))
 
 
-for drawWords in range(len(words)):
-	inputWord(words[drawWords].upper())
+def returnWordPuzzle(size):
+	global wordKey, wsArray, ROWS, COLS, wordArray
 
-# Change all of the blank spots to random letters.
-for r in range(ROWS):
-	for c in range(COLS):
-		if wsArray[r][c] == ' ':
-			wsArray[r][c] = random.choice(alphebet)
+	wordKey = "Word Key"
+	wordArray = []
+	wsArray = []
+	ROWS = size
+	COLS = size
 
-print_array(wsArray)
+	for rows in range(ROWS):
+		thisRow = []
+		for cols in range(COLS):
+			thisRow.append(' ')
+		wsArray.append(thisRow)
+
+	for drawWords in range(len(words)):
+		inputWord(words[drawWords].upper())
+
+	#Change all of the blank spots to random letters.
+	for r in range(ROWS):
+		for c in range(COLS):
+			if wsArray[r][c] == ' ':
+				wsArray[r][c] = random.choice(alphebet)
+
+	return wsArray, wordKey, wordArray
